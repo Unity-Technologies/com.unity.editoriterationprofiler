@@ -1,0 +1,102 @@
+﻿<html>
+<head>
+<style>
+body {
+	font-family: monospace;
+}
+body > .TreeViewItem {
+	margin-left: 175px;
+	border: none;
+}
+.Wordwrap { 
+   white-space: pre-wrap;
+   white-space: -moz-pre-wrap;  
+   white-space: -o-pre-wrap;    
+   word-wrap: break-word;
+}
+.Details {
+	font-size: 10px;
+}
+.TreeViewItem {
+	padding: 2px;
+	padding-left: 10px;
+	border-left: 1px solid black;
+}
+.TreeViewItem::before {
+	content: "-";
+	float: left;
+	padding-right: 2px;
+	margin-left: -10px;
+}
+.TreeViewItemCollapsed::before {
+	content: "+";
+}
+.TreeViewItemCollapsed > .TreeViewItem {
+	display: none;
+}
+.TreeViewItemLeaf::before {
+	content: none;
+}
+.TimeDisplay {
+	position:absolute;
+	left: 0px;
+	width: 95px;
+	text-align: right;
+	color: purple;
+}
+.PercentageDisplay{
+	position:absolute;
+	left: 120px;
+	text-align: right;
+	color: green;
+}
+.NameDisplay {
+	cursor: pointer;
+}
+.NameDisplay:hover {
+	text-decoration: underline;
+	color: blue;
+}
+.ToggleButton {
+	padding: 2px;
+	margin: 2px;
+	border: 1px solid black;
+	display: inline-block;
+	cursor: pointer;
+}
+</style>
+
+<script>
+function treeViewToggle(evt) {
+	if (evt.eventPhase != Event.AT_TARGET)
+		return;
+	var target = evt.target.parentNode;
+	var classList = target.className.split(" ");
+	var idx = classList.indexOf("TreeViewItemCollapsed");
+	if (idx < 0) {
+		target.className += " TreeViewItemCollapsed";
+	} else {
+		classList.splice(idx, 1);
+		target.className = classList.join(" ");
+	}
+}
+function treeViewToggleAll(enable) {
+	var elements = document.getElementsByClassName("TreeViewItem");
+	for (e = 0; e < elements.length; ++e) {
+		var elem = elements[e];
+		var classList = elem.className.split(" ");
+		if (classList.indexOf("TreeViewItemLeaf") >= 0)
+			continue;
+		var idx = classList.indexOf("TreeViewItemCollapsed");
+		if (enable && idx >= 0) {
+			classList.splice(idx, 1);
+			elem.className = classList.join(" ");
+		} else if (!enable && idx < 0) {
+			elem.className += " TreeViewItemCollapsed";
+		}
+
+	}
+}
+</script>
+</head>
+

@@ -1,0 +1,9 @@
+{
+	"name": "com.unity.editoriterationprofiler",
+	"displayName":"Editor Iteration Profiler",
+	"version": "0.1.0-preview",
+	"unity": "2019.2",
+	"description": "Editor Iteration Profiler",
+	"dependencies": {
+	}
+}
