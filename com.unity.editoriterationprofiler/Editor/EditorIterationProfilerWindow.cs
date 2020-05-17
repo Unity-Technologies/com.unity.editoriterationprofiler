@@ -450,6 +450,7 @@ namespace UnityEditor.EditorIterationProfiler
     {
         public static readonly GUIContent k_RangeBeginning = EditorGUIUtility.TrTextContent("Range Beginning", "Range beginning, value is inclusive.");
         public static readonly GUIContent k_RangeEnd = EditorGUIUtility.TrTextContent("Range End", "Range end, value is inclusive.");
+        public static readonly GUIContent k_WindowTitle = EditorGUIUtility.TrTextContent("Multi-Frame Exporter");
 
         IFileDataReporter m_Exporter;
 
@@ -471,10 +472,10 @@ namespace UnityEditor.EditorIterationProfiler
             maxSize = new Vector2(300, 125);
             minSize = new Vector2(300, 125);
 
-            name = "Multi-Frame Exporter";
+            titleContent = k_WindowTitle;
         }
 
-        private void OnGUI()
+        void OnGUI()
         {
             m_FirstRange = EditorGUILayout.IntField(k_RangeBeginning, m_FirstRange);
             m_SecondRange = EditorGUILayout.IntField(k_RangeEnd, m_SecondRange);
