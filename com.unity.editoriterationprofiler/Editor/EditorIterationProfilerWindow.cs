@@ -473,6 +473,7 @@ namespace UnityEditor.EditorIterationProfiler
             minSize = new Vector2(300, 125);
 
             titleContent = k_WindowTitle;
+            ShowUtility();
         }
 
         void OnGUI()
