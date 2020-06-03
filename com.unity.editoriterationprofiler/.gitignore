@@ -1,1 +1,53 @@
-.idea
+# =============== #
+# Unity generated #
+# =============== #
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Uu]nity[Pp]ackage[Mm]anager/
+[Ll]ogs/
+[Pp]ackages/[Mm]icrosoft*/
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+*.apk
+*.unitypackage
+*.log
+app.config
+packages.config
+# Unity3D Generated File On Crash Reports #
+sysinfo.txt
+ 
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+ExportedObj/
+.consulo/
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+ 
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
