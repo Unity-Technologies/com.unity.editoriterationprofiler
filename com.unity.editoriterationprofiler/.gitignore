@@ -21,7 +21,7 @@ packages.config
 sysinfo.txt
  
 # ===================================== #
-# Visual Studio / MonoDevelop generated #
+# Visual Studio / MonoDevelop / Rider etc. generated #
 # ===================================== #
 ExportedObj/
 .consulo/
@@ -40,6 +40,7 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+.idea
  
 # ============ #
 # OS generated #
