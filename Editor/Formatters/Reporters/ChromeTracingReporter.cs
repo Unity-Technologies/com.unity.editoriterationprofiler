@@ -22,7 +22,7 @@ namespace UnityEditor.EditorIterationProfiler.Formatting
 
             sb.AppendLine("\"otherData\": {");
             sb.AppendLine($"\"Readme\": \"Data serialized for use with Chrome Tracing. Load this file into chrome://tracing/ \",");
-            sb.AppendLine($"\"Data\": \"{EditorIterationProfilerIntegration.Instance.Settings.ToString().Replace("\r\n", "; ")}\"");
+            sb.AppendLine($"\"Data\": \"{EditorIterationProfilerIntegration.Instance.Settings.ToString().Replace(Environment.NewLine, "; ")}\"");
             sb.AppendLine("},");
 
             sb.AppendLine("\"traceEvents\": [");
@@ -38,8 +38,15 @@ namespace UnityEditor.EditorIterationProfiler.Formatting
             {
                 RecursiveIterationList(iterationList, ref sb);
 
-                // Remove the comma from the last element
-                sb.Remove(sb.Length - 3, 1);
+                // Remove the last comma
+                for (int i = sb.Length - 1; i > 0; --i)
+                {
+                    if (sb[i] == ',')
+                    {
+                        sb.Remove(i, 1);
+                        break;
+                    }
+                }
             }
 
             return sb;
