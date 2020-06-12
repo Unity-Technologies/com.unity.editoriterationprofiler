@@ -141,6 +141,7 @@ namespace UnityEditor.EditorIterationProfiler
 
                 foreach (var exporter in exporters)
                 {
+                    EditorIterationProfilerAnalytics.SendExportEvent(exporter.Name, EditorIterationProfilerAnalytics.ExportType.Captured.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Started.ToString());
                     menu.AddItem(new GUIContent(exporter.Name), false, () => ReportExtension(exporter, EditorIterationProfilerIntegration.Instance.IterationList));
                 }
 
@@ -171,6 +172,7 @@ namespace UnityEditor.EditorIterationProfiler
 
                 foreach (var exporter in exporters)
                 {
+                    EditorIterationProfilerAnalytics.SendExportEvent(exporter.Name, EditorIterationProfilerAnalytics.ExportType.Selected.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Started.ToString());
                     menu.AddItem(new GUIContent("Selected Frame/" + exporter.Name), false, () => ReportSelectedFrame(exporter, currentFrameIndex));
                 }
 
@@ -180,6 +182,7 @@ namespace UnityEditor.EditorIterationProfiler
                 {
                     menu.AddItem(new GUIContent("Multiple Frames/" + exporter.Name), false, () =>
                     {
+                        EditorIterationProfilerAnalytics.SendExportEvent(exporter.Name, EditorIterationProfilerAnalytics.ExportType.Multi.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Started.ToString());
                         var window = GetWindow<ProfilerMultiFrameSelector>();
                         window.Initialize(exporter);
                     });
@@ -214,15 +217,15 @@ namespace UnityEditor.EditorIterationProfiler
             GUILayout.EndHorizontal();
         }
 
-        public static void ReportMultipleFrames(IFileDataReporter exporter, int beginRange, int endRange)
+        public static void ReportMultipleFrames(IFileDataReporter reporter, int beginRange, int endRange)
         {
             if (beginRange == -1)
             {
-                ReportSelectedFrame(exporter, beginRange);
+                ReportSelectedFrame(reporter, beginRange);
                 return;
             }
 
-            var path = EditorUtility.SaveFolderPanel($"Export frames to folder", "", exporter.Extension);
+            var path = EditorUtility.SaveFolderPanel($"Export frames to folder", "", reporter.Extension);
 
             for (int i = beginRange - 1; i < endRange; ++i)
             {
@@ -254,12 +257,18 @@ namespace UnityEditor.EditorIterationProfiler
                 lastEvent.SetStartFinishTimeFromChildren();
                 lastEvent.Identifier = $"Data (Frame {i + 1})";
 
-                var filename = "EditorIterationData_" + $"Frame{i + 1}_" + $"{DateTime.Now.ToString("MMddyyyy_HHmmss")}" + $".{exporter.Extension}";
+                var filename = "EditorIterationData_" + $"Frame{i + 1}_" + $"{DateTime.Now.ToString("MMddyyyy_HHmmss")}" + $".{reporter.Extension}";
 
                 if (path.Length != 0)
                 {
-                    exporter.Report(list, path + @"/" + filename);
+                    reporter.Report(list, Path.Combine(path, filename));
+                    EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, EditorIterationProfilerAnalytics.ExportType.Multi.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Finished.ToString());
                 }
+            }
+
+            if (path.Length != 0)
+            {
+                EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, EditorIterationProfilerAnalytics.ExportType.Multi.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Finished.ToString());
             }
         }
 
@@ -293,7 +302,7 @@ namespace UnityEditor.EditorIterationProfiler
             lastEvent.SetStartFinishTimeFromChildren();
             lastEvent.Identifier = $"Data (Frame {currentFrameIndex + 1})";
 
-            ReportExtension(exporter, list);
+            ReportExtension(exporter, list, isExportingProfilerSelectedFrame: true);
         }
 
         static void ReportAllExtensions(IIterationList iterationList)
@@ -307,7 +316,7 @@ namespace UnityEditor.EditorIterationProfiler
             }
         }
 
-        static void ReportExtension(IFileDataReporter fileReporterType, IIterationList iterationList, string folderPath = "")
+        static void ReportExtension(IFileDataReporter fileReporterType, IIterationList iterationList, string folderPath = "", bool isExportingProfilerSelectedFrame = false)
         {
             var reporter = EditorIterationProfilerIntegration.Instance.DataReporterProvider.TryGetReporter<IFileDataReporter>(fileReporterType.GetType());
             if (reporter == null)
@@ -327,12 +336,21 @@ namespace UnityEditor.EditorIterationProfiler
             }
             else
             {
-                path = folderPath + @"/" + filename;
+                path = Path.Combine(folderPath, filename);
             }
 
             if (path.Length != 0)
             {
                 reporter.Report(iterationList, path);
+
+                if (isExportingProfilerSelectedFrame)
+                {
+                    EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, EditorIterationProfilerAnalytics.ExportType.Selected.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Finished.ToString());
+                }
+                else
+                {
+                    EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, EditorIterationProfilerAnalytics.ExportType.Captured.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Finished.ToString());
+                }
             }
         }
 
@@ -360,6 +378,11 @@ namespace UnityEditor.EditorIterationProfiler
         {
             var rect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
             m_TreeView.OnGUI(rect);
+        }
+
+        void OnLostFocus()
+        {
+            EditorIterationProfilerAnalytics.SendInteractionEvent(UnityProfiling.EditorProfilingEnabled, EditorApplication.isPlaying);
         }
 
         void OnGUI()
