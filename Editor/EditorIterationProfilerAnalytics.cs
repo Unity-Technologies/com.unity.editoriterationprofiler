@@ -37,18 +37,22 @@ namespace UnityEditor.EditorIterationProfiler
         internal enum ExportStatus
         {
             Started,
-            Finished
+            Finished,
+            Error
         }
 
         internal enum ExportType
         {
             Selected,
+            MultiWindow,
             Multi,
-            Captured
+            Captured,
+            CapturedAll
         }
 
         struct ExportEventData
         {
+            public string guid;
             public string format;
             public string type;
             public string status;
@@ -58,9 +62,12 @@ namespace UnityEditor.EditorIterationProfiler
         {
             public bool eipState;
             public bool isPlaying;
+            public bool deepProfile;
+            public bool flatten;
+            public bool userCode;
         }
 
-        public static void SendExportEvent(string format, string type, string status)
+        public static void SendExportEvent(string format, string type, string status, string guid)
         {
             if (!UnityEngine.Analytics.Analytics.enabled || !EnableAnalytics())
             {
@@ -71,13 +78,14 @@ namespace UnityEditor.EditorIterationProfiler
             {
                 format = format,
                 type = type,
-                status = status
+                status = status,
+                guid = guid
             };
 
             EditorAnalytics.SendEventWithLimit(k_ExportEventName, data);
         }
 
-        public static void SendInteractionEvent(bool state, bool isPlaying)
+        public static void SendInteractionEvent(bool state, bool isPlaying, bool deepProfile, bool flatten, bool userCode)
         {
             if (!UnityEngine.Analytics.Analytics.enabled || !EnableAnalytics())
             {
@@ -87,7 +95,10 @@ namespace UnityEditor.EditorIterationProfiler
             var data = new InteractionEventData()
             {
                 eipState = state,
-                isPlaying = isPlaying
+                isPlaying = isPlaying,
+                deepProfile = deepProfile,
+                flatten = flatten,
+                userCode = userCode
             };
 
             EditorAnalytics.SendEventWithLimit(k_InteractionEventName, data);

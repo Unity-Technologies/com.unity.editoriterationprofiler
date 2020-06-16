@@ -8,8 +8,13 @@ using UnityEditor.ShortcutManagement;
 using UnityEditorInternal;
 using UnityEngine;
 
+using ExportType = UnityEditor.EditorIterationProfiler.EditorIterationProfilerAnalytics.ExportType;
+using ExportStatus = UnityEditor.EditorIterationProfiler.EditorIterationProfilerAnalytics.ExportStatus;
+
+
 namespace UnityEditor.EditorIterationProfiler
 {
+
     public class EditorIterationProfilerWindow : EditorWindow
     {
         internal static class Styles
@@ -95,14 +100,6 @@ namespace UnityEditor.EditorIterationProfiler
             }
         }
 
-        void OnDisable()
-        {
-        }
-
-        void OnDestroy()
-        {
-        }
-
         void DrawToolbar()
         {
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
@@ -141,8 +138,7 @@ namespace UnityEditor.EditorIterationProfiler
 
                 foreach (var exporter in exporters)
                 {
-                    EditorIterationProfilerAnalytics.SendExportEvent(exporter.Name, EditorIterationProfilerAnalytics.ExportType.Captured.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Started.ToString());
-                    menu.AddItem(new GUIContent(exporter.Name), false, () => ReportExtension(exporter, EditorIterationProfilerIntegration.Instance.IterationList));
+                    menu.AddItem(new GUIContent(exporter.Name), false, () => ReportExtension(exporter, EditorIterationProfilerIntegration.Instance.IterationList, ExportType.Captured));
                 }
 
                 menu.AddSeparator("");
@@ -172,7 +168,6 @@ namespace UnityEditor.EditorIterationProfiler
 
                 foreach (var exporter in exporters)
                 {
-                    EditorIterationProfilerAnalytics.SendExportEvent(exporter.Name, EditorIterationProfilerAnalytics.ExportType.Selected.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Started.ToString());
                     menu.AddItem(new GUIContent("Selected Frame/" + exporter.Name), false, () => ReportSelectedFrame(exporter, currentFrameIndex));
                 }
 
@@ -182,7 +177,6 @@ namespace UnityEditor.EditorIterationProfiler
                 {
                     menu.AddItem(new GUIContent("Multiple Frames/" + exporter.Name), false, () =>
                     {
-                        EditorIterationProfilerAnalytics.SendExportEvent(exporter.Name, EditorIterationProfilerAnalytics.ExportType.Multi.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Started.ToString());
                         var window = GetWindow<ProfilerMultiFrameSelector>();
                         window.Initialize(exporter);
                     });
@@ -201,6 +195,8 @@ namespace UnityEditor.EditorIterationProfiler
 
             if (m_TreeView.UserCodeOnly != userCodeOnly)
             {
+                EditorIterationProfilerAnalytics.SendInteractionEvent(UnityProfiling.EditorProfilingEnabled, EditorApplication.isPlaying, ProfilerDriver.deepProfiling, EditorIterationProfilerIntegration.Instance.Settings.Flatten, EditorIterationProfilerIntegration.Instance.Settings.UserCode);
+
                 m_TreeView.UserCodeOnly = userCodeOnly;
                 EditorPrefs.SetBool(Styles.k_UserCodePref, m_TreeView.UserCodeOnly);
                 m_TreeView.Reload();
@@ -208,6 +204,8 @@ namespace UnityEditor.EditorIterationProfiler
 
             if (m_TreeView.Flatten != flatten)
             {
+                EditorIterationProfilerAnalytics.SendInteractionEvent(UnityProfiling.EditorProfilingEnabled, EditorApplication.isPlaying, ProfilerDriver.deepProfiling, EditorIterationProfilerIntegration.Instance.Settings.Flatten, EditorIterationProfilerIntegration.Instance.Settings.UserCode);
+
                 m_TreeView.Flatten = flatten;
                 EditorPrefs.SetBool(Styles.k_FlattenPref, m_TreeView.Flatten);
                 m_TreeView.Reload();
@@ -217,13 +215,16 @@ namespace UnityEditor.EditorIterationProfiler
             GUILayout.EndHorizontal();
         }
 
-        public static void ReportMultipleFrames(IFileDataReporter reporter, int beginRange, int endRange)
+        public static void ReportMultipleFrames(IFileDataReporter reporter, int beginRange, int endRange, string guid)
         {
+            var exportType = ExportType.Multi;
             if (beginRange == -1)
             {
-                ReportSelectedFrame(reporter, beginRange);
+                ReportSelectedFrame(reporter, beginRange, exportType, guid);
                 return;
             }
+
+            EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, exportType.ToString(), ExportStatus.Started.ToString(), guid);
 
             var path = EditorUtility.SaveFolderPanel($"Export frames to folder", "", reporter.Extension);
 
@@ -238,6 +239,7 @@ namespace UnityEditor.EditorIterationProfiler
 
                     if (!hfdv.valid)
                     {
+                        EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, exportType.ToString(), ExportStatus.Error.ToString(), guid);
                         Debug.LogError($"There was an issue getting the frame {i}");
                         return;
                     }
@@ -262,18 +264,23 @@ namespace UnityEditor.EditorIterationProfiler
                 if (path.Length != 0)
                 {
                     reporter.Report(list, Path.Combine(path, filename));
-                    EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, EditorIterationProfilerAnalytics.ExportType.Multi.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Finished.ToString());
                 }
             }
 
             if (path.Length != 0)
             {
-                EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, EditorIterationProfilerAnalytics.ExportType.Multi.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Finished.ToString());
+                EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, exportType.ToString(), ExportStatus.Finished.ToString(), guid);
             }
         }
 
-        static void ReportSelectedFrame(IFileDataReporter exporter, int currentFrameIndex)
+        static void ReportSelectedFrame(IFileDataReporter reporter, int currentFrameIndex, ExportType exportType = ExportType.Selected, string guid = "")
         {
+            if (string.IsNullOrEmpty(guid))
+            {
+                guid = Guid.NewGuid().ToString();
+                EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, exportType.ToString(), ExportStatus.Started.ToString(), guid);
+            }
+
             var list = new IterationList();
 
             var hfdv = UnityProfiling.GetFrame(currentFrameIndex, 0);
@@ -283,6 +290,7 @@ namespace UnityEditor.EditorIterationProfiler
 
                 if (!hfdv.valid)
                 {
+                    EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, exportType.ToString(), ExportStatus.Error.ToString(), guid);
                     Debug.LogError($"There was an issue getting the frame {currentFrameIndex}");
                     return;
                 }
@@ -302,28 +310,37 @@ namespace UnityEditor.EditorIterationProfiler
             lastEvent.SetStartFinishTimeFromChildren();
             lastEvent.Identifier = $"Data (Frame {currentFrameIndex + 1})";
 
-            ReportExtension(exporter, list, isExportingProfilerSelectedFrame: true);
+            ReportExtension(reporter, list, exportType, guid);
         }
 
         static void ReportAllExtensions(IIterationList iterationList)
         {
+            var guid = Guid.NewGuid().ToString();
+
             var path = EditorUtility.SaveFolderPanel($"Export frames to folder", "", "");
             var extensions = EditorIterationProfilerIntegration.Instance.DataReporterProvider.GetAllReporters<IFileDataReporter>();
 
             foreach (var extension in extensions)
             {
-                ReportExtension(extension, iterationList, path);
+                ReportExtension(extension, iterationList, ExportType.CapturedAll, guid, path);
             }
         }
 
-        static void ReportExtension(IFileDataReporter fileReporterType, IIterationList iterationList, string folderPath = "", bool isExportingProfilerSelectedFrame = false)
+        static void ReportExtension(IFileDataReporter fileReporterType, IIterationList iterationList, ExportType exportType, string guid = "", string folderPath = "")
         {
+            if (string.IsNullOrEmpty(guid))
+            {
+                guid = Guid.NewGuid().ToString();
+            }
+
+            if(ExportType.Selected != exportType)
+            {
+                EditorIterationProfilerAnalytics.SendExportEvent(fileReporterType.Name, exportType.ToString(), ExportStatus.Started.ToString(), guid);
+            }
+
             var reporter = EditorIterationProfilerIntegration.Instance.DataReporterProvider.TryGetReporter<IFileDataReporter>(fileReporterType.GetType());
             if (reporter == null)
             {
-#if DEVELOPMENT_BUILD
-                Debug.LogError($"Reporter is null! Check if type name \"{typeName}\" exists");
-#endif
                 return;
             }
 
@@ -343,14 +360,7 @@ namespace UnityEditor.EditorIterationProfiler
             {
                 reporter.Report(iterationList, path);
 
-                if (isExportingProfilerSelectedFrame)
-                {
-                    EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, EditorIterationProfilerAnalytics.ExportType.Selected.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Finished.ToString());
-                }
-                else
-                {
-                    EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, EditorIterationProfilerAnalytics.ExportType.Captured.ToString(), EditorIterationProfilerAnalytics.ExportStatus.Finished.ToString());
-                }
+                EditorIterationProfilerAnalytics.SendExportEvent(reporter.Name, exportType.ToString(), ExportStatus.Finished.ToString(), guid);
             }
         }
 
@@ -382,7 +392,7 @@ namespace UnityEditor.EditorIterationProfiler
 
         void OnLostFocus()
         {
-            EditorIterationProfilerAnalytics.SendInteractionEvent(UnityProfiling.EditorProfilingEnabled, EditorApplication.isPlaying);
+            EditorIterationProfilerAnalytics.SendInteractionEvent(UnityProfiling.EditorProfilingEnabled, EditorApplication.isPlaying, ProfilerDriver.deepProfiling, EditorIterationProfilerIntegration.Instance.Settings.Flatten, EditorIterationProfilerIntegration.Instance.Settings.UserCode);
         }
 
         void OnGUI()
@@ -480,6 +490,8 @@ namespace UnityEditor.EditorIterationProfiler
         int m_FirstRange = -1;
         int m_SecondRange = -1;
 
+        string m_EventGuid;
+
         static void OpenWindow()
         {
             GetWindow<ProfilerMultiFrameSelector>();
@@ -488,6 +500,14 @@ namespace UnityEditor.EditorIterationProfiler
         public void Initialize(IFileDataReporter exporter)
         {
             m_Exporter = exporter;
+
+            m_EventGuid = Guid.NewGuid().ToString();
+            EditorIterationProfilerAnalytics.SendExportEvent(exporter.Name, ExportType.MultiWindow.ToString(), ExportStatus.Started.ToString(), m_EventGuid);
+        }
+
+        public void OnDestroy()
+        {
+            EditorIterationProfilerAnalytics.SendExportEvent(m_Exporter.Name, ExportType.MultiWindow.ToString(), ExportStatus.Finished.ToString(), m_EventGuid);
         }
 
         void OnEnable()
@@ -517,7 +537,7 @@ namespace UnityEditor.EditorIterationProfiler
             if (GUILayout.Button("Export"))
             {
                 Debug.Log($"Exporting Frames [{m_FirstRange},{m_SecondRange}] ({Mathf.Abs(m_SecondRange) - Mathf.Abs(m_FirstRange) + 1} frames)");
-                EditorIterationProfilerWindow.ReportMultipleFrames(m_Exporter, m_FirstRange, m_SecondRange);
+                EditorIterationProfilerWindow.ReportMultipleFrames(m_Exporter, m_FirstRange, m_SecondRange, m_EventGuid);
                 Close();
             }
 

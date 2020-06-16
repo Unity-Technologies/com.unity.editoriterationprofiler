@@ -39,6 +39,8 @@ namespace UnityEditor.EditorIterationProfiler
 
             if (doApply)
             {
+                EditorIterationProfilerAnalytics.SendInteractionEvent(EditorProfilingEnabled, EditorApplication.isPlaying, ProfilerDriver.deepProfiling, EditorIterationProfilerIntegration.Instance.Settings.Flatten, EditorIterationProfilerIntegration.Instance.Settings.UserCode);
+
                 ProfilerDriver.deepProfiling = deep;
                 EditorPrefs.SetBool(EditorIterationProfilerWindow.Styles.k_EnableDeepProfile, deep);
                 EditorIterationProfilerIntegration.Instance.Settings.DeepProfile = deep;
