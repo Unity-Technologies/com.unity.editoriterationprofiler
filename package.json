@@ -2,7 +2,7 @@
 	"name": "com.unity.editoriterationprofiler",
 	"displayName":"Editor Iteration Profiler",
 	"version": "0.1.0-preview",
-	"unity": "2019.2",
+	"unity": "2019.3",
 	"description": "The Editor Iteration Profiler is an Editor tool which monitors domain reloads. It makes use of the Profiler and works by collecting and storing the relevant frames of the domain reload.\n\nMain features:\n▪ Enter/Exit playmode domain reload monitoring\n▪ Script Compilation monitoring\n▪ Ability to export its data or Profiler data to a number of formats such as CSV, HTML, JSON, etc.\n",
 	"dependencies": {
 	}
