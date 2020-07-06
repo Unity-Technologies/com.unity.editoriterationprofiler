@@ -1,7 +1,6 @@
-using NUnit.Framework;
 using System;
 using UnityEditor.EditorIterationProfiler.API;
-using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace UnityEditor.EditorIterationProfiler
 {
@@ -36,7 +35,7 @@ namespace UnityEditor.EditorIterationProfiler
 
         void EditorEvent(UnityEditorEvents.Event evt, string data)
         {
-            Assert.NotNull(m_IterationList);
+            Assert.IsNotNull(m_IterationList);
 
             if (!UnityProfiling.EditorProfilingEnabled)
             {

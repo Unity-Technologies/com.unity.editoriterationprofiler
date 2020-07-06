@@ -1,16 +1,13 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using UnityEditor.EditorIterationProfiler.Formatting;
 using UnityEditor.IMGUI.Controls;
-using UnityEditor.ShortcutManagement;
 using UnityEditorInternal;
 using UnityEngine;
-
-using ExportType = UnityEditor.EditorIterationProfiler.EditorIterationProfilerAnalytics.ExportType;
+using UnityEngine.Assertions;
 using ExportStatus = UnityEditor.EditorIterationProfiler.EditorIterationProfilerAnalytics.ExportStatus;
-
+using ExportType = UnityEditor.EditorIterationProfiler.EditorIterationProfilerAnalytics.ExportType;
 
 namespace UnityEditor.EditorIterationProfiler
 {
