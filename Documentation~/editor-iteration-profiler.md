@@ -16,5 +16,5 @@ The controls for the EIP are in the toolbar at the top of the window. You can us
 |**Clear**|Removes all recorded events from the EIP.|
 |**Collapse All**|Recursively collapses all events in the table.|
 |**Print to Console**|Logs all data to the console in a plain text format.|
-|**Export**|Export all of the data in the EIP. You can choose from HTML, JSON, CSV, Plaintext, or HTML Performance Report. For more information on this see the documentation on [Exporting data](exporting-data).|
-|**Export Profiler Data**|Export the data in the EIP for the selected Profiler frame, or choose a range of Profiler frames to export the EIP data for. When you select **Multiple Frames**, the beginning and end limits are inclusive. For more information, see the documentation on [How to export data](exporting-data#how-to-export-data)|
+|**Export**|Export all of the data in the EIP. You can choose from HTML, JSON, CSV, Plaintext, or HTML Performance Report. For more information on this see the documentation on [Exporting data](exporting-data.md).|
+|**Export Profiler Data**|Export the data in the EIP for the selected Profiler frame, or choose a range of Profiler frames to export the EIP data for. When you select **Multiple Frames**, the beginning and end limits are inclusive. For more information, see the documentation on [How to export data](exporting-data#how-to-export-data.md)|
