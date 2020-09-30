@@ -11,7 +11,7 @@ During these iterations, the Profiler also monitors Asset import time.
 
 The EIP saves all of this information in a separate window which you can then use to navigate through the data the Profiler produces. What’s more, the data that the EIP collects persists for the lifetime of the Editor, unlike the built-in Profiler which is limited to storing a set number of frames. 
 
-You can then [export the captured data](exporting-data) to either HTML, JSON, CSV, or plain text format. In addition to these formats, you can export the data to a HTML Performance Report, which groups the data together to make it easier to see areas you can optimize.
+You can then [export the captured data](exporting-data.md) to either HTML, JSON, CSV, or plain text format. In addition to these formats, you can export the data to a HTML Performance Report, which groups the data together to make it easier to see areas you can optimize.
 
 ## Preview package
 This package is available as a preview, so it is not ready for production use. The features and documentation in this package might change before it is verified for release.
