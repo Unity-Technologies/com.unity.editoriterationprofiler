@@ -21,11 +21,8 @@ The following table describes the package folder structure:
 
 |**Location**|**Description**|
 |---|---|
-|`com.unity.editoriterationprofiler`| Contains the code for this package.|
-|`com.unit.editoriterationprofiler.tests`|Contains the unit tests for the package.|
+|`Editor`| Contains the code for this package.|
 |`Documentation~`| Contains the documentation for the package.|
-|`UnityEditorIterationProfilerExample`|Contains an example Project.|
-|`ThisProjectisWeird`| Contains an example Project.|
 
 
 ## Installation
@@ -37,7 +34,7 @@ To install this package, perform the following steps:
 ## Requirements
 This version of Editor Iteration Profiler is compatible with the following versions of the Unity Editor:
 
-* 2019.2 and later
+* 2019.3 and later
 
 ## Known limitations
 The Editor Iteration Profiler package has the following known limitations:
@@ -46,6 +43,6 @@ The Editor Iteration Profiler package has the following known limitations:
 * If the script compilation taxes more than 600 frames, the EIP might not capture all data.
 
 ## Feedback and troubleshooting
-If you have any feedback on this package, or want to report a bug, see the [Unity Profiler forum](https://forum.unity.com/forums/profiler-previews.199/). 
+Please report bugs/suggestions at https://github.com/Unity-Technologies/com.unity.editoriterationprofiler/issues .
 
 If you encounter any problems with the EIP, either select the __Clear__ button in the toolbar of the EIP window, or go to __Window &gt; Analysis &gt; Editor Iteration Profiler &gt; Purge Cache__ to clear the EIP’s cache. This usually resolves most issues.
