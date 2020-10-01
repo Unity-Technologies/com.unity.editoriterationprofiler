@@ -2,11 +2,11 @@
 
 You can export the data that the Editor Iteration Profiler captures in several different file formats so that you can inspect the performance of your application in greater detail. The following file formats are available:
 
-* [.html](exporting-data#html)
-* [.json](exporting-data#json) (for [chrome tracing](http://www.chromium.org/developers/how-tos/trace-event-profiling-tool))
-* [.csv](exporting-data#csv)
-* [Plain text](exporting-data#plain-text)
-* [HTML Performance Report](exporting-data#html-report)
+* [.html](exporting-data#html.md)
+* [.json](exporting-data#json.md) (for [chrome tracing](http://www.chromium.org/developers/how-tos/trace-event-profiling-tool))
+* [.csv](exporting-data#csv.md)
+* [Plain text](exporting-data#plain-text.md)
+* [HTML Performance Report](exporting-data#html-report.md)
 
 <a name="how-to"></a>
 
