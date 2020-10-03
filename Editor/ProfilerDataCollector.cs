@@ -317,8 +317,6 @@ namespace UnityEditor.EditorIterationProfiler
             {
                 string name = frameData.GetItemName(childId);
 
-                //Debug.Log($"Name {name} - Framedata {frameData.frameIndex}");
-
                 for (var i = 0; i < markers.Length; ++i)
                 {
                     if (markers[i] == null)

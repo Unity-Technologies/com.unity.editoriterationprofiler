@@ -39,7 +39,7 @@ namespace UnityEditor.EditorIterationProfiler
             {
                 if (Kind == IterationEventKind.None)
                 {
-                    return $"[{Identifier}]";
+                    return $"{Identifier}";
                 }
 
                 string kindString = Kind.ToString();
