@@ -61,7 +61,11 @@ namespace UnityEditor.EditorIterationProfiler
                 AddMarkerFlags(marker, EventDataFlags.UserCode);
             }
 
+#if UNITY_2020_3_OR_NEWER
+            AddThreadMarker("UnloadDomain", "Domain Unloader", "Finalizer");
+#else
             AddThreadMarker("UnloadDomain", "Domain unloader", "Finalizer");
+#endif
         }
 
         void Initialize(IIterationList iterationList)

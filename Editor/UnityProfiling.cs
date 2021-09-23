@@ -83,7 +83,7 @@ namespace UnityEditor.EditorIterationProfiler
             }
 
             iter.Dispose();
-            throw new ArgumentException($"Could not find thread named '{threadName}'");
+            throw new ArgumentException($"Could not find thread named '{threadName}'. Depending on the Unity version, it could have been renamed.");
         }
     }
 }
