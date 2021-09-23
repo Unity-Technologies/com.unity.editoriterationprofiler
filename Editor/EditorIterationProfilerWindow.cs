@@ -53,6 +53,8 @@ namespace UnityEditor.EditorIterationProfiler
         EditorIterationProfilerTreeView m_TreeView;
         SearchField m_SearchField;
 
+        bool isWindowReady = false;
+
         [MenuItem("Window/Analysis/Editor Iteration Profiler/Show Window", priority = 8)]
         static void ShowProfilerWindow()
         {
@@ -61,6 +63,12 @@ namespace UnityEditor.EditorIterationProfiler
         }
 
         void OnEnable()
+        {
+            isWindowReady = false;
+            EditorApplication.delayCall += OnEnableInitialize;
+        }
+
+        void OnEnableInitialize()
         {
             if (!m_Initialized)
             {
@@ -94,6 +102,8 @@ namespace UnityEditor.EditorIterationProfiler
                 m_SearchField.downOrUpArrowKeyPressed += m_TreeView.SetFocusAndEnsureSelectedItem;
 
                 m_Initialized = true;
+
+                isWindowReady = true;
             }
         }
 
@@ -394,6 +404,11 @@ namespace UnityEditor.EditorIterationProfiler
 
         void OnGUI()
         {
+            if(!isWindowReady)
+            {
+                return;
+            }
+
             DrawToolbar();
 
             DrawTreeView();
